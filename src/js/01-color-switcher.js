@@ -4,13 +4,13 @@ const stopBtn = document.querySelector('[data-stop]');
 startBtn.addEventListener('click', onStartClick);
 stopBtn.addEventListener('click', onStopClick);
 
-function onStartClick(evt) {
+function onStartClick() {
   startBtn.disabled = true;
   stopBtn.disabled = false;
   intervalId = setInterval(changeBgColor, 1000);
 }
 
-function onStopClick(evt) {
+function onStopClick() {
   startBtn.disabled = false;
   stopBtn.disabled = true;
   clearInterval(intervalId);
