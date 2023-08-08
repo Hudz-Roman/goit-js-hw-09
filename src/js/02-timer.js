@@ -1,5 +1,13 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import Notiflix from 'notiflix';
+
+const dateTimePicker = document.querySelector('#datetime-picker');
+const startButton = document.querySelector('[data-start]');
+const daysDisp = document.querySelector('[data-days]');
+const hoursDisp = document.querySelector('[data-hours]');
+const minutesDisp = document.querySelector('[data-minutes]');
+const secondsDisp = document.querySelector('[data-seconds]');
 
 const options = {
   enableTime: true,
@@ -13,64 +21,56 @@ const options = {
       startButton.disabled = false;
     } else {
       startButton.disabled = true;
-      window.alert('Please choose a date in the future');
+      Notiflix.Notify.failure('Please choose a date in the future');
     }
   },
 };
 
-const dateTimePicker = document.getElementById('datetime-picker');
-const startButton = document.getElementById('start-button');
-const timerDisplay = document.getElementById('timer-display');
-
 flatpickr(dateTimePicker, options);
 
-function convertMs(ms) {
-  // Number of milliseconds per unit of time
-  const second = 1000;
-  const minute = second * 60;
-  const hour = minute * 60;
-  const day = hour * 24;
+startButton.addEventListener('click', () => {
+  const selectedDate = new Date(dateTimePicker.value);
 
-  // Remaining days
-  const days = Math.floor(ms / day);
-  // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
-  // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
-  // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const countdownInterval = setInterval(updateCountdown, 1000);
 
-  return { days, hours, minutes, seconds };
-}
+  function updateCountdown() {
+    const currentTime = new Date().getTime();
+    const timeDifference = selectedDate.getTime() - currentTime;
 
-// console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-// console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-// console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
+    if (timeDifference <= 0) {
+      clearInterval(countdownInterval);
+      Notiflix.Notify.info('Countdown finished!');
+      return;
+    }
 
-//? Check code below
+    function convertMs(ms) {
+      // Number of milliseconds per unit of time
+      const second = 1000;
+      const minute = second * 60;
+      const hour = minute * 60;
+      const day = hour * 24;
 
-// startButton.addEventListener('click', () => {
-//   const selectedDate = new Date(dateTimePicker.value);
+      // Remaining days
+      const days = Math.floor(ms / day);
+      // Remaining hours
+      const hours = Math.floor((ms % day) / hour);
+      // Remaining minutes
+      const minutes = Math.floor(((ms % day) % hour) / minute);
+      // Remaining seconds
+      const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
-//   const countdownInterval = setInterval(updateCountdown, 1000);
+      return { days, hours, minutes, seconds };
+    }
 
-//   function updateCountdown() {
-//     const currentTime = new Date().getTime();
-//     const timeDifference = selectedDate.getTime() - currentTime;
+    function addLeadingZero(value) {
+      return value.toString().padStart(2, '0');
+    }
 
-//     if (timeDifference <= 0) {
-//       clearInterval(countdownInterval);
-//       timerDisplay.textContent = '00:00:00:00';
-//       alert('Countdown finished!');
-//       return;
-//     }
+    const { days, hours, minutes, seconds } = convertMs(timeDifference);
 
-//     const { days, hours, minutes, seconds } = convertMs(timeDifference);
-//     const formattedTime = `${days.toString().padStart(2, '0')}:${hours
-//       .toString()
-//       .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
-//       .toString()
-//       .padStart(2, '0')}`;
-//     timerDisplay.textContent = formattedTime;
-//   }
-// });
+    daysDisp.textContent = addLeadingZero(days);
+    hoursDisp.textContent = addLeadingZero(hours);
+    minutesDisp.textContent = addLeadingZero(minutes);
+    secondsDisp.textContent = addLeadingZero(seconds);
+  }
+});
