@@ -1,15 +1,15 @@
 .gallery {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
-  align-items: center;
-  justify-content: center;
+  max-width: 1128px;
+  gap: 24px;
   list-style: none;
+  margin: 0 auto;
 }
 
 .gallery-image {
-  width: 510px;
-  height: 340px;
+  width: 360px;
+  height: 200px;
   border-radius: 5px;
 }
 
